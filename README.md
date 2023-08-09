@@ -2,8 +2,9 @@
 
 ## Local Dev
 
-### Need to download a web server
-For Mac I use https://www.mamp.info/en/downloads/
-
-For Windows, can use https://sourceforge.net/projects/wampserver/
+### Need launch with a web server
+I just use the simple Python3 http server:
+```
+python -m http.server [PORT]
+```
 
