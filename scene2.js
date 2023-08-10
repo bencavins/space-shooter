@@ -35,6 +35,9 @@ class Scene2 extends Phaser.Scene {
         // make power ups collide with each other
         this.physics.add.collider(this.powerUps, this.powerUps)
 
+        // make projectiles group
+        this.projectiles = this.add.group()
+
         // start ship animations
         this.ship1.play('ship1_anim')
         this.ship2.play('ship2_anim')
@@ -73,7 +76,13 @@ class Scene2 extends Phaser.Scene {
         this.movePlayerManager()
 
         if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
-            console.log("Fire!")
+            this.shootBeam()
+        }
+
+        // update all projectiles (beams)
+        for (let i = 0; i < this.projectiles.getChildren().length; i++) {
+            let beam = this.projectiles.getChildren()[i]
+            beam.update()
         }
     }
     
@@ -84,6 +93,10 @@ class Scene2 extends Phaser.Scene {
         if (ship.y > config.height + 25) {
             this.resetShipPosition(ship)
         }
+    }
+
+    shootBeam() {
+        let beam = new Beam(this)
     }
 
     resetShipPosition(ship) {
