@@ -14,51 +14,6 @@ class Scene2 extends Phaser.Scene {
         this.ship2 = this.add.sprite(config.width/2, config.height/2, 'ship2')
         this.ship3 = this.add.sprite(config.width/2 + 50, config.height/2, 'ship3')
 
-        // create the animations
-        this.anims.create({
-            key: 'ship1_anim',
-            frames: this.anims.generateFrameNumbers('ship1'),
-            frameRate: 20,
-            repeat: -1  // infinite loop
-        })
-        this.anims.create({
-            key: 'ship2_anim',
-            frames: this.anims.generateFrameNumbers('ship2'),
-            frameRate: 20,
-            repeat: -1  // infinite loop
-        })
-        this.anims.create({
-            key: 'ship3_anim',
-            frames: this.anims.generateFrameNumbers('ship3'),
-            frameRate: 20,
-            repeat: -1  // infinite loop
-        })
-        this.anims.create({
-            key: 'explode_anim',
-            frames: this.anims.generateFrameNumbers('explosion'),
-            frameRate: 20,
-            repeat: 0,  // no repeat
-            hideOnComplete: true
-        })
-        this.anims.create({
-            key: 'red',
-            frames: this.anims.generateFrameNumbers('powerup', {
-                start: 0,
-                end: 1
-            }),
-            frameRate: 10,
-            repeat: -1
-        })
-        this.anims.create({
-            key: 'gray',
-            frames: this.anims.generateFrameNumbers('powerup', {
-                start: 2,
-                end: 3
-            }),
-            frameRate: 10,
-            repeat: -1
-        })
-
         // create power up group
         this.powerUps = this.physics.add.group()
         let maxObjs = 4
@@ -93,10 +48,19 @@ class Scene2 extends Phaser.Scene {
         // add click event listener on game objects
         this.input.on('gameobjectdown', this.destroyShip, this)
 
-        this.add.text(20, 20, "Playing Game!", {
-            font: '25px Arial',
-            fill: 'yellow'
-        })
+        // this.add.text(20, 20, "Playing Game!", {
+        //     font: '25px Arial',
+        //     fill: 'yellow'
+        // })
+
+        // add player
+        this.player = this.physics.add.sprite(config.width/2 - 8, config.height - 64, 'player')
+        this.player.play('thrust')
+        this.player.setCollideWorldBounds(true)
+
+        // for keyboard events
+        this.cursorKeys = this.input.keyboard.createCursorKeys()
+        this.spacebar = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE)
     }
 
     update() {
@@ -105,6 +69,12 @@ class Scene2 extends Phaser.Scene {
         this.moveShip(this.ship3, 1)
 
         this.background.tilePositionY -= 0.5
+
+        this.movePlayerManager()
+
+        if (Phaser.Input.Keyboard.JustDown(this.spacebar)) {
+            console.log("Fire!")
+        }
     }
     
     moveShip(ship, speed) {
@@ -124,5 +94,25 @@ class Scene2 extends Phaser.Scene {
     destroyShip(pointer, gameObject) {
         gameObject.setTexture('explosion')
         gameObject.play('explode_anim')
+    }
+
+    movePlayerManager() {
+        // move side to side
+        if (this.cursorKeys.left.isDown) {
+            this.player.setVelocityX(-gameSettings.playerSpeed)
+        } else if (this.cursorKeys.right.isDown) {
+            this.player.setVelocityX(gameSettings.playerSpeed)
+        } else {
+            this.player.setVelocityX(0)
+        }
+
+        // move up and down
+        if (this.cursorKeys.up.isDown) {
+            this.player.setVelocityY(-gameSettings.playerSpeed)
+        } else if (this.cursorKeys.down.isDown) {
+            this.player.setVelocityY(gameSettings.playerSpeed)
+        } else {
+            this.player.setVelocityY(0)
+        }
     }
 }
